@@ -18,5 +18,6 @@ When a question depends on internal company knowledge, do NOT answer from prior 
 
 ## Rules
 
+- **OM2 first, not OM2 only:** lead with memory + the knowledge graph to orient, then chain to the connector for live/recent specifics. For the full ordering, retrieve the `company-data-cascade` skill with `skill_retrieve`.
 - If the Coworker MCP returns nothing relevant, say so plainly rather than guessing.
 - Never invent internal facts. Distinguish "the company's records say…" from your own reasoning.

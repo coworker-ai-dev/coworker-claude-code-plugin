@@ -7,6 +7,8 @@ description: Explore the company's OM2 organizational knowledge graph — the fa
 
 OM2 is a graph built from the company's connected data. It finds facts that are *indirectly* connected to your query, so it beats single-source search for understanding context. Use it before falling back to per-connector tools when the question is about organizational knowledge.
 
+For the full tool-selection guide (completeness/pagination signals, search modes, anti-loop rules), retrieve the `om2-usage` skill from Coworker with `skill_retrieve`.
+
 ## Pick the right tool
 
 - **`om2_search`** — default entry point. Semantic search with graph expansion. Best for "what do we know about X?", "what happened with Y?", "summarize Z". Keep each query focused on ONE concept.
