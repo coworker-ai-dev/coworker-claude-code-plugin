@@ -1,0 +1,6 @@
+{
+  "hookSpecificOutput": {
+    "hookEventName": "SessionStart",
+    "additionalContext": "The Coworker MCP is connected. It is the source of truth for THIS company's knowledge — people, teams, decisions, policies, projects, customers, and connected tools (Slack, Jira, GitHub, HubSpot, Salesforce, Google, BigQuery, Snowflake), plus the OM2 knowledge graph. When the user asks anything that depends on internal/organizational knowledge, ground the answer in Coworker rather than answering from prior knowledge: call individual_context once early to learn who the user is and what data they can access; use memory_retrieval and (when om2_* tools are present) om2_search before connector-specific search; and use identify_people when people are named. Cite the source behind internal claims, and if Coworker returns nothing relevant, say so instead of guessing."
+  }
+}

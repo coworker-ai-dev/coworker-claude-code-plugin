@@ -1,0 +1,14 @@
+{
+  "name": "coworker",
+  "owner": {
+    "name": "Coworker.ai",
+    "url": "https://coworker.ai"
+  },
+  "plugins": [
+    {
+      "name": "coworker",
+      "source": "./",
+      "description": "Connect Claude Code to your company knowledge via the Coworker MCP — connectors, org memory, and the OM2 knowledge graph."
+    }
+  ]
+}
