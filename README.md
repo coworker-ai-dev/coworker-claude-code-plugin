@@ -22,7 +22,7 @@ Connect Claude Code to your company's knowledge through the **Coworker MCP** —
 
 ```sh
 # Add the marketplace (point at the repo that hosts this plugin)
-/plugin marketplace add <your-org>/coworker-claude-code-plugin
+/plugin marketplace add villagelabsco/coworker-claude-code-plugin
 
 # Install
 /plugin install coworker@coworker
