@@ -66,27 +66,16 @@ All paths use the same OAuth sign-in (Google) and only ever expose tools you hav
 
 ## How steering works
 
-Plugins can't edit Claude Code's global system prompt, so this plugin steers behavior three ways, strongest first:
+Plugins can't edit Claude Code's global system prompt, so this plugin steers behavior four ways, strongest first:
 
 1. **MCP server instructions** — served by the Coworker MCP itself (per-network, includes OM2 guidance when enabled). This reaches every client, not just Claude Code.
 2. **`SessionStart` hook** — injects a short instruction to load `individual_context` and prefer Coworker for company knowledge (`hooks/session-context.json`).
-3. **Skill descriptions** — Claude invokes the skills above automatically when a request matches.
+3. **`UserPromptSubmit` hook** — auto-runs `om2_resolve_entities` (`type: mcp_tool`) on each prompt, passing the prompt as `text`, and injects the resolved graph node ids alongside it. This mirrors the Coworker chat agent's pre-execution entity resolution, so Claude starts with node ids for the people/accounts/deals/channels the user named instead of having to resolve them mid-task. No-ops on networks without OM2 (the tool isn't present).
+4. **Skill descriptions** — Claude invokes the skills above automatically when a request matches.
 
-### Optional: pre-fetch memory on every prompt
-
-For teams that want memory pulled in automatically before Claude answers, add a `UserPromptSubmit` hook that calls `memory_retrieval`. It's left out of the default because it adds latency/token cost to every turn and benefits from tuning. Example to add to `hooks/hooks.json`:
-
-```json
-"UserPromptSubmit": [
-  {
-    "hooks": [
-      { "type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/hooks/prefetch-memory.sh" }
-    ]
-  }
-]
-```
-
-(Provide `prefetch-memory.sh` that emits `hookSpecificOutput.additionalContext`, optionally keyword-gated.)
+> The `UserPromptSubmit` hook adds one MCP call per prompt. If that's too costly for a team, remove the `UserPromptSubmit` block from `hooks/hooks.json` and rely on the "resolve first" instruction the MCP already provides.
+>
+> **Not yet live-tested** — the exact `${prompt}` substitution variable and the `mcp_tool` hook wiring should be smoke-tested in Claude Code before wide rollout.
 
 ## Layout
 
@@ -96,7 +85,7 @@ For teams that want memory pulled in automatically before Claude answers, add a 
   marketplace.json     # single-plugin marketplace for internal distribution
 .mcp.json              # remote HTTP MCP server (https://odin.coworker.ai/mcp, OAuth 2.1)
 hooks/
-  hooks.json           # SessionStart steering hook
+  hooks.json           # SessionStart (context) + UserPromptSubmit (auto-resolve entities) hooks
   session-context.json # additionalContext payload
 skills/
   ask-company/ knowledge-graph/ search-memory/ who-is/ check-connectors/
