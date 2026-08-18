@@ -16,7 +16,7 @@ Connect Claude Code to your company's knowledge through the **Coworker MCP** —
 ## Requirements
 
 - Claude Code **v2.1.224+** (archive marketplace sources) (v2.1.186+ recommended for `claude mcp login`).
-- A Coworker account whose network has MCP access enabled (`mcpEnabledForNetwork`). OM2 tools appear only when your network has `enableOM2` on.
+- A Coworker account whose network has MCP access enabled (`mcpEnabledForNetwork`).
 
 ## Install
 
@@ -86,7 +86,7 @@ Plugins can't edit Claude Code's global system prompt, so this plugin steers beh
 2. **`SessionStart` hook** — injects a short instruction to load `individual_context` and prefer Coworker for company knowledge (`hooks/session-context.json`).
 3. **Skill descriptions** — Claude invokes the skills above automatically when a request matches.
 
-> There is no `UserPromptSubmit` hook. Entity resolution is not a separate pre-execution step — every OM2 tool carries its own `resolution.entities` in its response envelope, so no `om2_resolve_entities` call or injected representation is needed, and that tool isn't available to call in the first place.
+> There is no `UserPromptSubmit` hook. There is no separate resolve-first step in the external MCP path — every OM2 tool exposed here carries its own `resolution.entities` in its response envelope, so no `om2_resolve_entities` call or injected representation is needed, and that tool isn't available to call from this surface.
 
 ## Layout
 

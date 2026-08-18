@@ -27,4 +27,4 @@ Not every tool takes a plain-language query — `om2_source_trace` and `om2_cyph
 
 ## If OM2 tools are absent
 
-This is an MCP/connector configuration matter, not something to guess a specific cause for. Don't claim graph results — use `memory_retrieval` and connector search instead.
+Treat this as an MCP/connector configuration matter, not a flag you can reason about — don't assume or state a specific cause. Don't claim graph results — use `memory_retrieval` and connector search instead.
