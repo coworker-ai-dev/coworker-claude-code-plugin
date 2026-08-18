@@ -9,18 +9,6 @@
           }
         ]
       }
-    ],
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "mcp_tool",
-            "server": "coworker",
-            "tool": "om2_resolve_entities",
-            "input": { "text": "${prompt}" }
-          }
-        ]
-      }
     ]
   }
 }
