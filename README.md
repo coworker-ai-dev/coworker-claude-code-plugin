@@ -16,7 +16,7 @@ Connect Claude Code to your company's knowledge through the **Coworker MCP** —
 ## Requirements
 
 - Claude Code **v2.1.224+** (archive marketplace sources) (v2.1.186+ recommended for `claude mcp login`).
-- A Coworker account whose network has MCP access enabled (`mcpEnabledForNetwork`). OM2 tools appear only when your network has `enableOM2` on.
+- A Coworker account whose network has MCP access enabled (`mcpEnabledForNetwork`).
 
 ## Install
 
@@ -80,16 +80,13 @@ happens, claude.ai org admins re-upload the zip; hosted-marketplace installs upd
 
 ## How steering works
 
-Plugins can't edit Claude Code's global system prompt, so this plugin steers behavior four ways, strongest first:
+Plugins can't edit Claude Code's global system prompt, so this plugin steers behavior three ways, strongest first:
 
-1. **MCP server instructions** — served by the Coworker MCP itself (per-network, includes OM2 guidance when enabled). This reaches every client, not just Claude Code.
+1. **MCP server instructions** — served by the Coworker MCP itself (per-network, includes OM2 guidance when enabled). The MCP server supplies the canonical tool descriptions and response-shape guidance; plugin instructions must not duplicate or re-describe how results are represented. This reaches every client, not just Claude Code.
 2. **`SessionStart` hook** — injects a short instruction to load `individual_context` and prefer Coworker for company knowledge (`hooks/session-context.json`).
-3. **`UserPromptSubmit` hook** — auto-runs `om2_resolve_entities` (`type: mcp_tool`) on each prompt, passing the prompt as `text`, and injects the resolved graph node ids alongside it. This mirrors the Coworker chat agent's pre-execution entity resolution, so Claude starts with node ids for the people/accounts/deals/channels the user named instead of having to resolve them mid-task. No-ops on networks without OM2 (the tool isn't present).
-4. **Skill descriptions** — Claude invokes the skills above automatically when a request matches.
+3. **Skill descriptions** — Claude invokes the skills above automatically when a request matches.
 
-> The `UserPromptSubmit` hook adds one MCP call per prompt. If that's too costly for a team, remove the `UserPromptSubmit` block from `hooks/hooks.json` and rely on the "resolve first" instruction the MCP already provides.
->
-> **Not yet live-tested** — the exact `${prompt}` substitution variable and the `mcp_tool` hook wiring should be smoke-tested in Claude Code before wide rollout.
+> There is no `UserPromptSubmit` hook. There is no separate resolve-first step in the external MCP path — every OM2 tool exposed here carries its own `resolution.entities` in its response envelope, so no `om2_resolve_entities` call or injected representation is needed, and that tool isn't available to call from this surface.
 
 ## Layout
 
@@ -99,7 +96,7 @@ Plugins can't edit Claude Code's global system prompt, so this plugin steers beh
   marketplace.json     # single-plugin marketplace for internal distribution
 .mcp.json              # remote HTTP MCP server (https://odin.coworker.ai/mcp, OAuth 2.1)
 hooks/
-  hooks.json           # SessionStart (context) + UserPromptSubmit (auto-resolve entities) hooks
+  hooks.json           # SessionStart (context) hook
   session-context.json # additionalContext payload
 skills/
   ask-company/ knowledge-graph/ search-memory/ who-is/ check-connectors/
@@ -109,6 +106,12 @@ skills/
 
 - You only ever see/invoke tools whose data sources you have access to — the Coworker MCP enforces per-user connection/OAuth/seat/flag checks server-side.
 - Verify the plugin locally before publishing: `claude --plugin-dir .` then check `/mcp` connects and a "what do we know about…" prompt triggers `individual_context` + `memory_retrieval`/`om2_search`.
+- Post-deploy MCP smoke test — confirm the plugin reads the shared envelope correctly against the live server:
+  - a query that resolves cleanly returns `status: ok` with populated `resolution.entities`
+  - a partial match returns `status: partial` and Claude narrows or says what's missing rather than treating it as complete
+  - a query with no matches returns `status: no_data` and Claude says so instead of guessing
+  - a broad query that returns `retrieval.has_more: true` causes Claude to narrow or page, not present the result as exhaustive
+  - an id from one tool result (e.g. an `om2_search` hit) is passed into `om2_source_trace` or `om2_cypher` without ever being shown to the user
 
 ## Releasing (hosted artifacts)
 
