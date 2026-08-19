@@ -15,14 +15,14 @@ Connect Claude Code to your company's knowledge through the **Coworker MCP** —
 
 ## Requirements
 
-- Claude Code **v2.1.120+** (v2.1.186+ recommended for `claude mcp login`).
+- Claude Code **v2.1.224+** (archive marketplace sources) (v2.1.186+ recommended for `claude mcp login`).
 - A Coworker account whose network has MCP access enabled (`mcpEnabledForNetwork`). OM2 tools appear only when your network has `enableOM2` on.
 
 ## Install
 
 ```sh
-# Add the marketplace (point at the repo that hosts this plugin)
-/plugin marketplace add coworker-ai-dev/coworker-claude-code-plugin
+# Add the Coworker marketplace (hosted — no GitHub needed)
+/plugin marketplace add https://app.coworker.ai/plugin/marketplace.json
 
 # Install
 /plugin install coworker@coworker
@@ -95,3 +95,15 @@ skills/
 
 - You only ever see/invoke tools whose data sources you have access to — the Coworker MCP enforces per-user connection/OAuth/seat/flag checks server-side.
 - Verify the plugin locally before publishing: `claude --plugin-dir .` then check `/mcp` connects and a "what do we know about…" prompt triggers `individual_context` + `memory_retrieval`/`om2_search`.
+
+## Releasing (hosted artifacts)
+
+The app serves this plugin as GitHub-free install artifacts — a zip + `marketplace.json`
+under `core/frontend-main/public/plugin/`, surfaced on the Connect to Claude settings
+page (admin zip upload, `extraKnownMarketplaces` archive install). After merging a plugin
+change here:
+
+1. Bump `version` in `.claude-plugin/plugin.json` (drives `/plugin update` detection).
+2. In `core/frontend-main`, run `scripts/build-claude-plugin-zip.sh` (zips this repo's
+   `HEAD` and regenerates `marketplace.json` with the new sha256/version).
+3. Commit `public/plugin/*` there and ship it.
