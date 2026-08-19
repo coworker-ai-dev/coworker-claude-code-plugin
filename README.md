@@ -117,7 +117,10 @@ under `core/frontend-main/public/plugin/`, surfaced on the Connect to Claude set
 page (admin zip upload, `extraKnownMarketplaces` archive install). After merging a plugin
 change here:
 
-1. Bump `version` in `.claude-plugin/plugin.json` (drives `/plugin update` detection).
-2. In `core/frontend-main`, run `scripts/build-claude-plugin-zip.sh` (zips this repo's
-   `HEAD` and regenerates `marketplace.json` with the new sha256/version).
-3. Commit `public/plugin/*` there and ship it.
+1. Bump `version` in `.claude-plugin/plugin.json` (drives `/plugin update` detection)
+   as part of the change.
+2. Merge to `main`. The [release-to-core](.github/workflows/release-to-core.yml) workflow
+   rebuilds the zip + `marketplace.json` and opens a PR against `villagelabsco/core`
+   develop automatically (needs the `CORE_RELEASE_TOKEN` repo secret).
+3. Merge that core PR and ship it. Manual fallback: run
+   `core/frontend-main/scripts/build-claude-plugin-zip.sh` and commit `public/plugin/*`.
