@@ -119,8 +119,9 @@ change here:
 
 1. Bump `version` in `.claude-plugin/plugin.json` (drives `/plugin update` detection)
    as part of the change.
-2. Merge to `main`. The [release-to-core](.github/workflows/release-to-core.yml) workflow
-   rebuilds the zip + `marketplace.json` and opens a PR against `villagelabsco/core`
-   develop automatically (needs the `CORE_RELEASE_TOKEN` repo secret).
-3. Merge that core PR and ship it. Manual fallback: run
-   `core/frontend-main/scripts/build-claude-plugin-zip.sh` and commit `public/plugin/*`.
+2. Merge to `main`. The [release-reminder](.github/workflows/release-reminder.yml)
+   workflow opens a `release-needed` issue here whenever shell files change - it's
+   reminder-only on purpose, so no cross-repo credentials live in this repo.
+3. In `core/frontend-main`, run `scripts/build-claude-plugin-zip.sh` (zips this repo's
+   `HEAD` and regenerates `marketplace.json` with the new sha256/version), commit
+   `public/plugin/*` there, and PR it to `develop`. Close the reminder issue once it ships.
