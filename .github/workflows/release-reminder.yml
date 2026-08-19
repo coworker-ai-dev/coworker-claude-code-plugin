@@ -1,0 +1,52 @@
+# Reminds us to rebuild the hosted install artifacts when the plugin shell
+# changes. Skill *guidance* ships live via skill_retrieve rows and needs no
+# release; only shell changes (hooks, skill roster, .mcp.json, plugin.json)
+# make the zip + marketplace.json under core's public/plugin/ stale.
+#
+# Deliberately reminder-only: no cross-repo credentials live in this repo.
+# The actual release is a human running core/frontend-main/scripts/
+# build-claude-plugin-zip.sh and PRing public/plugin/* to core develop.
+name: Release reminder
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "hooks/**"
+      - "skills/**"
+      - ".mcp.json"
+      - ".claude-plugin/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Open or bump the release issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          COMMIT_URL: ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}
+        run: |
+          body=$(cat <<EOF
+          Plugin shell files changed on main ($COMMIT_URL) - the hosted zip + marketplace.json served by app.coworker.ai are now stale.
+
+          To release:
+          1. Make sure \`version\` in \`.claude-plugin/plugin.json\` was bumped (drives \`/plugin update\` detection).
+          2. In \`core/frontend-main\`, run \`scripts/build-claude-plugin-zip.sh\` (defaults to a sibling checkout of this repo).
+          3. Commit \`public/plugin/*\` there and PR it to \`develop\`.
+          4. Close this issue once that core PR ships.
+          EOF
+          )
+          existing=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --label release-needed --json number --jq '.[0].number')
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --repo "$GITHUB_REPOSITORY" --body "$body"
+          else
+            gh issue create --repo "$GITHUB_REPOSITORY" \
+              --title "Release needed: rebuild hosted plugin artifacts in core" \
+              --label release-needed \
+              --body "$body"
+          fi
