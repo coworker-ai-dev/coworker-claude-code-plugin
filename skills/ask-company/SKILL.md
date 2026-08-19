@@ -5,19 +5,14 @@ description: Answer questions about THIS company — its decisions, policies, pr
 
 # Ask the company
 
-When a question depends on internal company knowledge, do NOT answer from prior knowledge. Ground the answer in the company's own data via the Coworker MCP.
+When a question depends on internal company knowledge, do NOT answer from prior knowledge — ground the answer in the company's own data via the Coworker MCP.
 
-## Procedure
+## The short version
 
-1. **Establish who's asking** (once per session): if you don't already have it, call `individual_context` to learn the user's role, team, and which data sources they can access. Don't query sources they can't reach.
-2. **Pull organizational memory**: call `memory_retrieval` with a short query summarizing the question. This surfaces prior decisions, norms, and connector-specific knowledge.
-3. **Use the knowledge graph when available**: if OM2 tools are present (e.g. `om2_search`), prefer `om2_search` for "what do we know about X / what happened with Y / summarize Z" — it expands across related facts, not just direct matches. See the `knowledge-graph` skill for which OM2 tool to pick.
-4. **Resolve people**: if the question names people, call `identify_people` to get their real identity, role, and relationships.
-5. **Drill into sources** only as needed: use the relevant connector search tool (Slack, Jira, GitHub, etc.) for specifics, scoped to sources the user can access.
-6. **Cite**: name the source (doc, message, ticket, or entity) behind each claim. If OM2 is available, `om2_source_trace` can recover the supporting sources.
+1. Call `individual_context` once per session to learn who's asking and which data sources they can access.
+2. Search organizational memory first (`memory_retrieval`), then the knowledge graph (`om2_search`, when om2_* tools are present), then connector-specific search for live detail.
+3. Call `identify_people` when people are named. Cite the source behind each claim; if Coworker returns nothing relevant, say so instead of guessing.
 
-## Rules
+## The live playbook
 
-- **OM2 first, not OM2 only:** lead with memory + the knowledge graph to orient, then chain to the connector for live/recent specifics. For the full ordering, retrieve the `mcp-company-data-cascade` skill with `skill_retrieve`.
-- If the Coworker MCP returns nothing relevant, say so plainly rather than guessing.
-- Never invent internal facts. Distinguish "the company's records say…" from your own reasoning.
+The full current procedure — exact search order, fallbacks, and when to stop — is maintained server-side and may be newer than this file. Call `skill_retrieve` with skill name `mcp-company-data-cascade` and follow what it returns. For conflicting or stale-looking results, also retrieve `mcp-data-quality`.

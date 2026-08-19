@@ -64,6 +64,20 @@ All paths use the same OAuth sign-in (Google) and only ever expose tools you hav
 
   > Note: the MCP server already sends per-network instructions to every client; this workspace prompt is a reliability backstop for clients that under-weight MCP instructions, and for non-plugin connections.
 
+## How updates ship (thin-skill architecture)
+
+The zip is deliberately a **stable shell**: skill bodies point at canonical playbooks
+maintained server-side as `public."GlobalSkill"` rows (`mcp-company-data-cascade`,
+`mcp-om2-usage`, `mcp-data-quality`, `mcp-document-retrieval`) that Claude fetches live
+via `skill_retrieve`. Guidance changes ship by editing those rows - every install
+channel (claude.ai zip uploads, hosted marketplace, connectors) picks them up
+instantly, with no re-upload and no version bump.
+
+A new zip (and the release steps below) is only needed when the shell itself changes:
+hook wiring, the skill roster or their routing descriptions, or `.mcp.json`. When that
+happens, claude.ai org admins re-upload the zip; hosted-marketplace installs update via
+`/plugin update`.
+
 ## How steering works
 
 Plugins can't edit Claude Code's global system prompt, so this plugin steers behavior four ways, strongest first:

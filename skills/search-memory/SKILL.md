@@ -17,3 +17,4 @@ Use the Coworker MCP `memory_retrieval` tool to recover stored organizational kn
 
 - Memories come scoped as user-level or network-level — prefer network-level for shared conventions.
 - To store something for the future, only use `memory_learning`, and only when the user explicitly asks you to remember it.
+- If results conflict with each other or look stale, retrieve the server-side `mcp-data-quality` skill with `skill_retrieve` for the current resolution rules.
