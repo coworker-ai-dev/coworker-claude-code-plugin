@@ -11,7 +11,7 @@ Refer to OM2 as "organizational memory" and never expose internal node/report ID
 
 ## Get the live guide first
 
-The full, current usage guide — tool selection, procedure, result semantics, completeness/pagination signals, cypher recipes, anti-loop rules — is maintained server-side and may be newer than this file. Before any non-trivial graph work, call `skill_retrieve` with skill name `mcp-om2-usage` and follow what it returns.
+The full, current usage guide — tool selection, procedure, result semantics, completeness/pagination signals, cypher recipes, anti-loop rules — is maintained server-side and may be newer than this file. Before any non-trivial graph work, call `skill_retrieve` with skill name `om2-memory-usage` and follow what it returns.
 
 ## Quick tool map
 
