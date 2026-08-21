@@ -15,4 +15,4 @@ When a question depends on internal company knowledge, do NOT answer from prior 
 
 ## The live playbook
 
-The full current procedure — exact search order, fallbacks, and when to stop — is maintained server-side and may be newer than this file. Call `skill_retrieve` with skill name `coworker-company-data-search` and follow what it returns. For conflicting sources, exhaustive-page reads, timezones, freshness, or reading user-provided links — there's no fixed skill name for those; use `skill_search` to find the current task-specific playbook.
+The full current procedure — exact search order, fallbacks, and when to stop — is maintained server-side and may be newer than this file. Call `skill_retrieve` with skill name `mcp-company-data-cascade` and follow what it returns. For conflicting sources, exhaustive-page reads, timezones, freshness, or reading user-provided links — there's no fixed skill name for those; use `skill_search` to find the current task-specific playbook.
