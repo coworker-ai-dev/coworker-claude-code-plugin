@@ -1,6 +1,6 @@
 ---
 name: knowledge-graph
-description: Explore the company's OM2 organizational knowledge graph — the fastest way to understand people, projects, customers, and how they connect. Use for open-ended "what do we know about X", "how is A related to B", "what's the history of Y", or "what are the themes around Z" questions. Only applies when OM2 tools (om2_*) are available in this session; if they aren't, fall back to memory_retrieval and connector search.
+description: Explore the company's OM2 organizational knowledge graph — the fastest way to understand people, projects, customers, and how they connect. Use for open-ended "what do we know about X", "how is A related to B", "what's the history of Y", or "what are the themes around Z" questions. Only applies when OM2 tools (om2_*) are available in this session; if they aren't, fall back to connector search.
 ---
 
 # Organizational knowledge graph (OM2)
@@ -27,4 +27,4 @@ Not every tool takes a plain-language query — `om2_source_trace` and `om2_cyph
 
 ## If OM2 tools are absent
 
-Treat this as an MCP/connector configuration matter, not a flag you can reason about — don't assume or state a specific cause. Don't claim graph results — use `memory_retrieval` and connector search instead.
+Treat this as an MCP/connector configuration matter, not a flag you can reason about — don't assume or state a specific cause. Don't claim graph results — use connector search instead.
