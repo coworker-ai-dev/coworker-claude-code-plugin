@@ -56,8 +56,8 @@ All paths use the same OAuth sign-in (Google) and only ever expose tools you hav
   When a request depends on internal/company knowledge, use the Coworker tools instead
   of answering from general knowledge:
   - Call individual_context once early to learn who the user is and what data they can access.
-  - Use memory_retrieval (and om2_search when it's available) before connector-specific search.
-  - Use identify_people when people are named.
+  - Search the knowledge graph first (om2_search and the other om2_* tools, when available) before connector-specific search.
+  - Use om2_identify_people when people are named.
   Cite the source behind internal claims. If Coworker returns nothing relevant, say so
   rather than guessing.
   ```
@@ -105,7 +105,7 @@ skills/
 ## Notes
 
 - You only ever see/invoke tools whose data sources you have access to — the Coworker MCP enforces per-user connection/OAuth/seat/flag checks server-side.
-- Verify the plugin locally before publishing: `claude --plugin-dir .` then check `/mcp` connects and a "what do we know about…" prompt triggers `individual_context` + `memory_retrieval`/`om2_search`.
+- Verify the plugin locally before publishing: `claude --plugin-dir .` then check `/mcp` connects and a "what do we know about…" prompt triggers `individual_context` + `om2_search`.
 - Post-deploy MCP smoke test — confirm the plugin reads the shared envelope correctly against the live server:
   - a query that resolves cleanly returns `status: ok` with populated `resolution.entities`
   - a partial match returns `status: partial` and Claude narrows or says what's missing rather than treating it as complete
