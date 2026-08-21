@@ -1,9 +1,9 @@
 ---
 name: search-memory
-description: Find past decisions, learnings, conventions, and connector knowledge stored in the company's organizational memory. Use when the user references something the team "decided", "agreed", "always does", or asks "have we done X before / what's our convention for Y". Calls the Coworker MCP memory_retrieval tool.
+description: Find past decisions, learnings, conventions, and connector knowledge stored in the company's stored memory. Use when the user references something the team "decided", "agreed", "always does", or asks "have we done X before / what's our convention for Y". Calls the Coworker MCP memory_retrieval tool.
 ---
 
-# Search organizational memory
+# Search stored memory
 
 Use the Coworker MCP `memory_retrieval` tool to recover stored organizational knowledge: decisions, norms, processes, and connector-specific insights (Slack/Jira/GitHub/Salesforce/etc.).
 
