@@ -1,6 +1,6 @@
 ---
 name: ask-company
-description: Default lens for any substantive work-related question — not only ones that obviously reference internal knowledge. Before answering from general knowledge or from prior-chat memory alone, check whether the company's own data (via Coworker MCP) would change or sharpen the answer. Skip only for questions that are clearly generic: definitions, general advice/best-practices, math, or requests with no plausible tie to this company's people, projects, or data. If genuinely unsure whether company context exists, check rather than assume it doesn't — the cost of a quick check is far lower than the cost of answering confidently from the wrong source.
+description: Default lens for any substantive work-related question — not only ones that obviously reference internal knowledge. Before answering from general knowledge or from prior-chat memory alone, check whether the company's own data (via Coworker MCP) would change or sharpen the answer. Skip only for questions that are clearly generic, e.g. definitions, general advice/best-practices, math, or requests with no plausible tie to this company's people, projects, or data. If genuinely unsure whether company context exists, check rather than assume it doesn't — the cost of a quick check is far lower than the cost of answering confidently from the wrong source.
 ---
 
 # Ask the company
