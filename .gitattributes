@@ -1,0 +1,6 @@
+# Contributor-facing files, excluded from `git archive` (the release zip
+# customers download and upload to their Claude org).
+AGENTS.md       export-ignore
+CLAUDE.md       export-ignore
+.github/        export-ignore
+.gitattributes  export-ignore
