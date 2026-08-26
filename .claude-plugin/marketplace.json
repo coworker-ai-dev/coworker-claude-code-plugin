@@ -8,7 +8,7 @@
     {
       "name": "coworker",
       "source": "./",
-      "description": "Connect Claude Code to your company knowledge via the Coworker MCP — connectors, org memory, and the OM2 knowledge graph."
+      "description": "Connect Claude to your company knowledge via the Coworker MCP - connectors, org memory, and the OM2 knowledge graph."
     }
   ]
 }

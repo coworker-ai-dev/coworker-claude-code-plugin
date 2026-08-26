@@ -24,3 +24,7 @@ When genuinely torn: check. A miss costs one extra tool call. Skipping the check
 ## The live playbook
 
 The full current procedure — exact search order, fallbacks, and when to stop — is maintained server-side and may be newer than this file. Call `skill_retrieve` with skill name `mcp-company-data-cascade` and follow what it returns. For conflicting sources, exhaustive-page reads, timezones, freshness, or reading user-provided links — there's no fixed skill name for those; use `skill_search` to find the current task-specific playbook.
+
+## If the Coworker tools aren't in this session
+
+Don't silently answer from general knowledge or another tool. Tell the user Coworker isn't reachable in this chat and follow the "If the Coworker tools are missing" steps in the `company-data-first` skill (enable the Coworker connector in the chat's tools menu and complete the sign-in), then retry.

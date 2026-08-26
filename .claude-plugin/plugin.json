@@ -1,8 +1,8 @@
 {
   "name": "coworker",
   "displayName": "Coworker",
-  "version": "0.3.6",
-  "description": "Connect Claude Code to your company knowledge via the Coworker MCP — Slack, Jira, GitHub, HubSpot, Salesforce, Google, BigQuery/Snowflake, org memory, and the OM2 knowledge graph. Auto-loads who you are and routes company-knowledge questions through Coworker.",
+  "version": "0.3.7",
+  "description": "Make Coworker the front door for your company's knowledge in Claude - Slack, Jira, GitHub, HubSpot, Salesforce, Google, BigQuery/Snowflake, org memory, and the OM2 knowledge graph. Auto-loads who you are and routes company-knowledge questions through Coworker instead of guessing.",
   "author": {
     "name": "Coworker.ai",
     "url": "https://coworker.ai"
@@ -13,6 +13,9 @@
     "company-knowledge",
     "mcp",
     "knowledge-graph",
+    "organizational-memory",
+    "claude",
+    "cowork",
     "slack",
     "jira",
     "github",

@@ -1,24 +1,27 @@
-# Coworker for Claude Code
+# Coworker for Claude
 
-Connect Claude Code to your company's knowledge through the **Coworker MCP** — your connected tools (Slack, Jira, GitHub, HubSpot, Salesforce, Google, BigQuery, Snowflake), organizational memory, and the **OM2 knowledge graph** — so Claude answers company questions from your real data instead of guessing.
+Connect Claude — claude.ai, the Cowork desktop app, and Claude Code — to your company's knowledge through the **Coworker MCP**: your connected tools (Slack, Jira, GitHub, HubSpot, Salesforce, Google, BigQuery, Snowflake), organizational memory, and the **OM2 knowledge graph** — so Claude answers company questions from your real data instead of guessing.
 
 ## What you get
 
-- **One-step connection** to the Coworker MCP (OAuth sign-in in your browser; token cached for future sessions).
-- **Auto-loaded context**: a `SessionStart` hook tells Claude to learn who you are and to route company-knowledge questions through Coworker.
-- **Skills** that steer Claude toward the right Coworker tools:
+- **One MCP connection** to Coworker (OAuth sign-in in your browser; token cached for future sessions).
+- **Skills** that route company questions through Coworker on every surface:
+  - `company-data-first` — the mandatory tool order (organizational memory before connector tools), plus what to do when Coworker isn't connected yet
   - `ask-company` — answer internal questions from company data
   - `knowledge-graph` — explore the OM2 graph (people, projects, relationships, themes)
   - `search-memory` — recover past decisions and conventions
   - `who-is` — resolve people to their real identity and org relationships
   - `check-connectors` — see which data sources you can reach
+  - `sync-skills` — copy your own local skills into Coworker so they follow you across surfaces
+- **Auto-loaded context in Claude Code**: a `SessionStart` hook injects the tool order at session start. (Hooks only run in Claude Code — on other surfaces the same rules arrive via the `company-data-first` skill and the session context the Coworker server attaches to the first tool result.)
 
 ## Requirements
 
-- Claude Code **v2.1.224+** (archive marketplace sources) (v2.1.186+ recommended for `claude mcp login`).
+- For Claude Code installs: **v2.1.224+** (archive marketplace sources); v2.1.186+ recommended for `claude mcp login`.
+- For claude.ai org installs: a Claude **Team or Enterprise** plan with plugins enabled, and an org Owner role to upload.
 - A Coworker account whose network has MCP access enabled (`mcpEnabledForNetwork`).
 
-## Install
+## Install (Claude Code)
 
 ```sh
 # Add the Coworker marketplace (hosted — no GitHub needed)
@@ -28,24 +31,26 @@ Connect Claude Code to your company's knowledge through the **Coworker MCP** —
 /plugin install coworker@coworker
 ```
 
-The plugin points at the Coworker MCP at `https://odin.coworker.ai/mcp`. On first use, Claude Code opens a browser to sign in with your Google account and authorize access; the token is cached and reused in future sessions.
+The plugin points at the Coworker MCP at `https://odin.coworker.ai/mcp`. On first use, a browser opens to sign in with your Google account and authorize access; the token is cached and reused in future sessions.
 
-## Connecting from Claude Code, Cowork, or Claude.ai
+## What each surface actually delivers
 
-Coworker is one MCP server (`https://odin.coworker.ai/mcp`) reachable from every Claude surface. Pick your surface:
+Coworker is one MCP server (`https://odin.coworker.ai/mcp`) reachable from every Claude surface, but the surfaces do NOT deliver the same plugin pieces. This table is the ground truth — plan your rollout around it:
 
-| Surface | Best path | Steering you get |
+| Surface | Best path | What reaches the model |
 |---|---|---|
-| **Claude Code** (CLI/IDE) | Install this plugin (below). Or `claude mcp add --transport=http coworker https://odin.coworker.ai/mcp`. | MCP `Instructions` + skills + SessionStart hook |
-| **Claude Cowork** (desktop agent) | Install this plugin via Customize → Plugins. Or add the connector: Customize → Plugins → Add connector → Streamable HTTP → the URL → OAuth. | MCP `Instructions` + skills (hook may not fire) |
-| **Claude.ai** (web) | Add a custom connector: Settings → Connectors → Add custom connector → the URL → sign in. | MCP `Instructions` only |
+| **Claude.ai** (web + desktop app) | Org admin uploads this plugin zip (Organization settings → Plugins), or each user adds a custom connector: Settings → Connectors → Add custom connector → the URL → sign in. | Plugin **skills** (mounted in every session once the org installs the plugin) + **tool descriptions** + the **session context** Coworker attaches to the first tool result. MCP server `Instructions` are **not** delivered on this surface, and hooks never run. |
+| **Claude Cowork** (desktop agent) | Install this plugin via Customize → Plugins, or add the connector by URL. | Skills + tool descriptions + first-tool-result session context + MCP `Instructions`. Hooks do not fire in Cowork. |
+| **Claude Code** (CLI/IDE) | Install this plugin (above), or `claude mcp add --transport=http coworker https://odin.coworker.ai/mcp`. | Everything: skills, tool descriptions, first-tool-result session context, MCP `Instructions`, and the `SessionStart` hook. |
 
 All paths use the same OAuth sign-in (Google) and only ever expose tools you have access to.
 
+**The step people miss on claude.ai:** installing the plugin mounts the skills, but the Coworker *connector* still needs each member to authorize it — Claude shows a connect/sign-in prompt on first use, and tools only appear after it's completed. If Claude says Coworker isn't reachable, check the chat's tools/connectors menu, enable Coworker, and finish the Google sign-in. The `company-data-first` skill walks users through exactly this instead of failing silently.
+
 ### Workspace admins (Team/Enterprise)
 
-- **Push it to everyone:** add Coworker as an **organization-managed connector** (or a "required" org plugin for Cowork/Code) so users don't paste URLs. Optionally apply per-tool allow/ask/block policies.
-- **Add steering at the workspace level** (recommended — covers users who connect *without* the plugin, since the SessionStart hook only runs in Claude Code): paste this into your workspace/Project system prompt:
+- **Push it to everyone:** upload the zip under Organization settings → Plugins and set it to **Installed by default** (or Required). Then, in the plugin's settings, set the Coworker connector's tool permissions to **Always allow** so members don't get an approval prompt on every call. Members still complete a one-time Google sign-in when Claude first uses Coworker.
+- **Add steering at the workspace level** (recommended). On claude.ai web the MCP server's instructions never reach the model, so a workspace/Project system prompt is a real delivery channel there — not just a backstop. Paste this:
 
   ```text
   This workspace is connected to Coworker — the source of truth for our company's
@@ -61,8 +66,6 @@ All paths use the same OAuth sign-in (Google) and only ever expose tools you hav
   Cite the source behind internal claims. If Coworker returns nothing relevant, say so
   rather than guessing.
   ```
-
-  > Note: the MCP server already sends per-network instructions to every client; this workspace prompt is a reliability backstop for clients that under-weight MCP instructions, and for non-plugin connections.
 
 ## How updates ship (thin-skill architecture)
 
@@ -80,11 +83,12 @@ happens, claude.ai org admins re-upload the zip; hosted-marketplace installs upd
 
 ## How steering works
 
-Plugins can't edit Claude Code's global system prompt, so this plugin steers behavior three ways, strongest first:
+Plugins can't edit Claude's global system prompt, so Coworker steers behavior through four channels — and because the surfaces differ (see the table above), the channels deliberately overlap:
 
-1. **MCP server instructions** — served by the Coworker MCP itself (per-network, includes OM2 guidance when enabled). The MCP server supplies the canonical tool descriptions and response-shape guidance; plugin instructions must not duplicate or re-describe how results are represented. This reaches every client, not just Claude Code.
-2. **`SessionStart` hook** — injects a short instruction to load `individual_context` and prefer Coworker for company knowledge (`hooks/session-context.json`).
-3. **Skill descriptions** — Claude invokes the skills above automatically when a request matches.
+1. **Skill descriptions** — mounted on every surface that has the plugin, including claude.ai web. `company-data-first` carries the mandatory tool order; the others claim their question shapes.
+2. **Tool descriptions + first-tool-result session context** — served by the Coworker MCP itself, so they reach every connected client, plugin or not. The server attaches a short orientation block (who you are, the tool order, playbook names) to the first tool result of each session.
+3. **MCP server instructions** — per-network, served at connect time. Delivered in Claude Code and Cowork; claude.ai web currently drops them, which is why channels 1 and 2 exist.
+4. **`SessionStart` hook** — Claude Code only (`hooks/session-context.json`); injects the tool order at session start, before any tool is called.
 
 > There is no `UserPromptSubmit` hook. There is no separate resolve-first step in the external MCP path — every OM2 tool exposed here carries its own `resolution.entities` in its response envelope, so no `om2_resolve_entities` call or injected representation is needed, and that tool isn't available to call from this surface.
 
@@ -96,10 +100,11 @@ Plugins can't edit Claude Code's global system prompt, so this plugin steers beh
   marketplace.json     # single-plugin marketplace for internal distribution
 .mcp.json              # remote HTTP MCP server (https://odin.coworker.ai/mcp, OAuth 2.1)
 hooks/
-  hooks.json           # SessionStart (context) hook
+  hooks.json           # SessionStart (context) hook — Claude Code only
   session-context.json # additionalContext payload
 skills/
-  ask-company/ knowledge-graph/ search-memory/ who-is/ check-connectors/
+  company-data-first/ ask-company/ knowledge-graph/ search-memory/
+  who-is/ check-connectors/ sync-skills/
 ```
 
 ## Notes
@@ -116,7 +121,7 @@ skills/
 ## Releasing (hosted artifacts)
 
 The app serves this plugin as GitHub-free install artifacts — a zip + `marketplace.json`
-under `core/frontend-main/public/plugin/`, surfaced on the Connect to Claude settings
+under `core/frontend-main/public/plugin/`, surfaced on the Coworker MCP settings
 page (admin zip upload, `extraKnownMarketplaces` archive install). After merging a plugin
 change here:
 
@@ -126,5 +131,5 @@ change here:
    workflow opens a `release-needed` issue here whenever shell files change - it's
    reminder-only on purpose, so no cross-repo credentials live in this repo.
 3. In `core/frontend-main`, run `scripts/build-claude-plugin-zip.sh` (zips this repo's
-   `HEAD` and regenerates `marketplace.json` with the new sha256/version), commit
+   `origin/main` and regenerates `marketplace.json` with the new sha256/version), commit
    `public/plugin/*` there, and PR it to `develop`. Close the reminder issue once it ships.
