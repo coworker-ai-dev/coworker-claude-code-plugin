@@ -1,6 +1,6 @@
 ---
 name: sync-skills
-description: Sync, transfer, or export the user's Claude Code / Cowork skills into Coworker so they're available across surfaces. Use only when the user explicitly asks to sync/transfer/export their skills to Coworker. Reads the available-skills list from this session and creates the user-authored ones as Coworker skills.
+description: Sync, transfer, or export the user's local skills (from Claude Code, Cowork, or any surface that lists them) into Coworker so they're available across surfaces. Use only when the user explicitly asks to sync/transfer/export their skills to Coworker. Reads the available-skills list from this session and creates the user-authored ones as Coworker skills.
 ---
 
 # Sync skills to Coworker
@@ -9,7 +9,7 @@ When the user asks to sync, transfer, or export their skills to Coworker, follow
 
 1. **Read the available skills list** from the system-reminder in this conversation — the block that lists available skills with their descriptions.
 
-2. **Filter out default/built-in skills** (they ship with Claude Code and aren't user-authored): update-config, keybindings-help, verify, code-review, fewer-permission-prompts, loop, schedule, claude-api, run, init, review, security-review.
+2. **Filter out default/built-in skills** (they ship with the client and aren't user-authored): update-config, keybindings-help, verify, code-review, fewer-permission-prompts, loop, schedule, claude-api, run, init, review, security-review.
 
 3. **Filter out plugin skills** — any skill with a colon in its name (e.g. `caveman:caveman`, `chrome-devtools-mcp:chrome-devtools`). These come from installed plugins, not the user.
 

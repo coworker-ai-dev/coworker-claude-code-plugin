@@ -18,3 +18,4 @@ Use the Coworker MCP `om2_identify_people` tool to map names/emails to real iden
 
 - Returns identified users (name, email, role) plus an `unknown_users` list for names that didn't match — surface unresolved names rather than guessing.
 - Use the resolved email/role downstream (e.g. to scope a Slack or Jira search to the right person).
+- If `om2_identify_people` isn't in this session's tool list, don't guess identities from memory — tell the user Coworker isn't reachable and follow the "If the Coworker tools are missing" steps in the `company-data-first` skill.

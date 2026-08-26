@@ -18,3 +18,4 @@ Use the Coworker MCP `individual_context` tool to load the user's identity and d
 
 - Use the returned role/team to personalize answers and pick sensible defaults (e.g. their team's Jira project).
 - Running this early is what makes the lower-bar triggering in `ask-company` and `who-is` actually cheap — once identity/access is loaded, subsequent checks are fast, so there's less reason to gate them behind "is this obviously relevant."
+- If `individual_context` itself isn't in this session's tool list, the Coworker connector isn't reachable in this chat — say so and follow the "If the Coworker tools are missing" steps in the `company-data-first` skill instead of skipping the check silently.

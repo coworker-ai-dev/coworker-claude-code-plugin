@@ -19,3 +19,4 @@ Use the Coworker MCP `memory_retrieval` tool to recover stored organizational kn
 - Memories come scoped as user-level or network-level — prefer network-level for shared conventions.
 - To store something for the future, only use `memory_learning`, and only when the user explicitly asks you to remember it.
 - If results conflict with each other or look stale, use `skill_search` to find the current data-quality playbook — there's no fixed skill name for it.
+- If `memory_retrieval` isn't in this session's tool list, tell the user Coworker isn't reachable and follow the "If the Coworker tools are missing" steps in the `company-data-first` skill rather than answering from past-chat recall.

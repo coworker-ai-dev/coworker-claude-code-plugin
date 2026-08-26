@@ -43,4 +43,4 @@ Not every tool takes a plain-language query — the six ID tools and `om2_cypher
 
 ## If OM2 tools are absent
 
-Treat this as an MCP/connector configuration matter, not a flag you can reason about — don't assume or state a specific cause. Don't claim graph results — use connector search instead.
+Treat this as an MCP/connector configuration matter — don't assume or state a specific cause you can't see, and never claim graph results. If NO Coworker tools are present at all, tell the user and follow the "If the Coworker tools are missing" steps in the `company-data-first` skill (enable the Coworker connector, complete the sign-in). If other Coworker tools are present but the om2_* family isn't, use Coworker's connector search tools instead and say the graph wasn't available.
