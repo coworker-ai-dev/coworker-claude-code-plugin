@@ -1,7 +1,7 @@
 {
   "name": "coworker",
   "displayName": "Coworker",
-  "version": "0.3.7",
+  "version": "0.3.8",
   "description": "Make Coworker the front door for your company's knowledge in Claude - Slack, Jira, GitHub, HubSpot, Salesforce, Google, BigQuery/Snowflake, org memory, and the OM2 knowledge graph. Auto-loads who you are and routes company-knowledge questions through Coworker instead of guessing.",
   "author": {
     "name": "Coworker.ai",

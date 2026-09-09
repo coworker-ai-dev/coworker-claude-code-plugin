@@ -100,8 +100,9 @@ Plugins can't edit Claude's global system prompt, so Coworker steers behavior th
   marketplace.json     # single-plugin marketplace for internal distribution
 .mcp.json              # remote HTTP MCP server (https://odin.coworker.ai/mcp, OAuth 2.1)
 hooks/
-  hooks.json           # SessionStart (context) hook — Claude Code only
+  hooks.json           # SessionStart (context) + PreToolUse (session tag) hooks — Claude Code only
   session-context.json # additionalContext payload
+  client-session.py    # adds client_session_id (this conversation's Claude Code session id) to every Coworker call
 skills/
   company-data-first/ ask-company/ knowledge-graph/ search-memory/
   who-is/ check-connectors/ sync-skills/
@@ -110,6 +111,7 @@ skills/
 ## Notes
 
 - You only ever see/invoke tools whose data sources you have access to — the Coworker MCP enforces per-user connection/OAuth/seat/flag checks server-side.
+- The `PreToolUse` hook adds one field, `client_session_id`, to each Coworker tool call: the opaque session UUID Claude Code already assigns the conversation. The Coworker MCP is stateless, so this is how it keeps one activity history per conversation instead of merging a day's calls together. Nothing else is read or sent; if `python3` is missing the hook is a no-op and calls go through unchanged.
 - Verify the plugin locally before publishing: `claude --plugin-dir .` then check `/mcp` connects and a "what do we know about…" prompt triggers `individual_context` + `om2_search`.
 - Post-deploy MCP smoke test — confirm the plugin reads the shared envelope correctly against the live server:
   - a query that resolves cleanly returns `status: ok` with populated `resolution.entities`

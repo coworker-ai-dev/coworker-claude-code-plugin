@@ -9,6 +9,18 @@
           }
         ]
       }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "^mcp__(plugin_coworker_)?coworker__",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/client-session.py\" || true",
+            "timeout": 5
+          }
+        ]
+      }
     ]
   }
 }
