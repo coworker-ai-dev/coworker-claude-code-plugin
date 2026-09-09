@@ -10,7 +10,7 @@ When a question depends on internal company knowledge — or *might* — do NOT 
 ## The short version
 
 1. Call `individual_context` once per session to learn who's asking and which data sources they can access.
-2. Run a first-pass check before answering — `memory_retrieval` and/or `om2_search` — on any substantive work question, even ones that don't obviously reference the company. This is a cheap, near-automatic step, not something to reason your way out of first.
+2. Run a first-pass check before answering on any substantive work question, even ones that don't obviously reference the company. Pick the tool by question shape (the table in `company-data-first`): `om2_search` for "what do we know / what happened", `om2_entity_brief` for a named account or deal, `om2_identify_people` then `om2_user_activity` for a person or "me", `om2_enumerate` for "all / every". This is a cheap, near-automatic step, not something to reason your way out of first.
 3. If the first-pass check turns up nothing, say so explicitly rather than silently falling back to general knowledge — the user should know whether an answer is "no company context exists" versus "I didn't look."
 4. If people are named, call `om2_identify_people` (see `who-is`) in the same pass — don't answer "what is X working on" from memory of past chats alone.
 5. Cite the source behind each claim.
