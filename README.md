@@ -50,7 +50,7 @@ All paths use the same OAuth sign-in (Google) and only ever expose tools you hav
 ### Workspace admins (Team/Enterprise)
 
 - **Add the connector first:** Organization settings → Connectors → Add custom connector → `https://odin.coworker.ai/mcp`. Keep the detected defaults (Authentication Always required; OAuth client "No client ID, register one automatically" - Coworker does not support Anthropic's hosted client metadata yet; Managed authorization off; no headers). Then set the connector's tool permissions to **Always allow** so members don't get an approval prompt on every call. Members complete a one-time Google sign-in (Customize → Connectors → Connect).
-- **Then the plugin:** upload the zip under Organization settings → Plugins and set it to **Installed by default** (or Required). It adds the skills in chat and the full plugin in Cowork. It is not the connection.
+- **Then the plugin, set to Required:** upload the zip under Organization settings → Plugins. The connector gives Claude the tools; the plugin makes Claude reach for them on its own (skills in chat, the full plugin with hooks in Cowork). It does not create the connector, so do the step above first.
 - **Add Organization instructions** (Organization settings → Organization and access → Organization instructions, 3,000-char cap). On claude.ai chat the MCP server's instructions never reach the model, so this is a real delivery channel, not a backstop. Paste this:
 
   ```text
