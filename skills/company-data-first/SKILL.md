@@ -35,7 +35,7 @@ Coworker MCP is the source of truth for this company's internal knowledge: peopl
 
 ## Playbooks
 
-Detailed playbooks are maintained server-side and may be newer than this file: `skill_retrieve` with `mcp-company-data-cascade` for the company-data search order, `mcp-om2-usage` for the knowledge-graph tools, and `skill_search` for anything else rather than assuming a fixed skill name.
+Two are bundled next to this file, regenerated from the server-side rows at each release: `playbook.md` (the company-data search cascade, with worked examples) and `data-quality.md` (conflicting sources, "all" means all, timezones, freshness). Read them when the question is more than a single lookup. The knowledge-graph skill carries the OM2 tool guide. For anything else, or if a bundled copy looks stale, `skill_retrieve` by name (`mcp-company-data-cascade`, `mcp-om2-usage`, `mcp-data-quality`, `mcp-document-retrieval`) returns the live version, and `skill_search` finds task-specific playbooks.
 
 ## If the Coworker tools are missing from this session
 

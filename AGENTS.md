@@ -25,9 +25,12 @@ generic. When in doubt, leave it out and ask Bradford.
 
 ## Releasing
 
-Skill guidance ships live via `skill_retrieve` rows - no release needed. Only
-shell changes (`hooks/`, the skill roster, `.mcp.json`, `.claude-plugin/`) need
-a version bump and a rebuild in core. See "Releasing" in the README; the
+Skill guidance ships live via `skill_retrieve` rows, and two skills also bundle
+a generated copy of their playbook (`skills/*/playbook.md`, `data-quality.md`)
+so the model gets the procedure without a separate retrieval call. Regenerate
+those copies with `scripts/sync-playbooks.py` whenever the rows change and
+bump the version. Shell changes (`hooks/`, the skill roster, `.mcp.json`,
+`.claude-plugin/`) also need a version bump and a rebuild in core. See "Releasing" in the README; the
 release-reminder workflow opens a `release-needed` issue when this applies.
 
 ## Workflow

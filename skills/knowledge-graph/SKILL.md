@@ -9,9 +9,9 @@ OM2 is a graph built from the company's connected data. It finds facts that are 
 
 Refer to OM2 as "organizational memory" and never expose internal node/report IDs to the user.
 
-## Get the live guide first
+## Read the playbook
 
-The full, current usage guide — tool selection, procedure, result semantics, completeness/pagination signals, cypher recipes, anti-loop rules — is maintained server-side and may be newer than this file. Before any non-trivial graph work, call `skill_retrieve` with skill name `mcp-om2-usage` and follow what it returns.
+The full usage guide — tool selection, the search→deep-dive workflow, result semantics, completeness signals, anti-loop rules — is in `playbook.md` next to this file. Read it before any non-trivial graph work. It is a copy of the server-side `mcp-om2-usage` skill, regenerated at each release; if you suspect it is stale, `skill_retrieve` with skill name `mcp-om2-usage` returns the live version.
 
 ## Quick tool map
 
