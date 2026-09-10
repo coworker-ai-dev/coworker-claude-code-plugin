@@ -90,7 +90,7 @@ Plugins can't edit Claude's global system prompt, so Coworker steers behavior th
 1. **Skill descriptions** — mounted on every surface that has the plugin, including claude.ai web. `company-data-first` carries the mandatory tool order; the others claim their question shapes.
 2. **Tool descriptions + first-tool-result session context** — served by the Coworker MCP itself, so they reach every connected client, plugin or not. The server attaches a short orientation block (who you are, the tool order, playbook names) to the first tool result of each session.
 3. **MCP server instructions** — per-network, served at connect time. Delivered in Claude Code and Cowork; claude.ai web currently drops them, which is why channels 1 and 2 exist.
-4. **`SessionStart` hook** — Claude Code only (`hooks/session-context.json`); injects the tool order at session start, before any tool is called.
+4. **`SessionStart` hook** — Claude Code only (`hooks/session-context.json`); a short pointer at session start: Coworker is the source of truth, follow the server instructions, how to detect the `timezone` argument. It deliberately does not repeat the routing map — the MCP server instructions carry the one canonical copy, and the skill bodies carry it for surfaces that drop server instructions.
 
 > There is no `UserPromptSubmit` hook. There is no separate resolve-first step in the external MCP path — every OM2 tool exposed here carries its own `resolution.entities` in its response envelope, so no `om2_resolve_entities` call or injected representation is needed, and that tool isn't available to call from this surface.
 
