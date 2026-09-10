@@ -6,7 +6,7 @@ Handling conflicting sources, incomplete result sets, timezones, and stale data 
 
 ## Conflicting sources
 
-- For current field-level state — deal stage, ticket status, assignee — the live system of record wins. It decays fastest, and OM2 and memory lag behind it.
+- OM2 mirrors the connected systems with a short lag, usually 30 to 60 minutes and rarely more. For most questions, including deal stage, ticket status, and assignee, the graph's value is current enough to answer from. Go to the live system of record only when the question is about the last hour, when the user says the value just changed, or when an exact aggregate is needed (JQL, SQL, a CRM report). When you do, say so.
 - When two graph or memory facts conflict, prefer the more recently dated one — but check whether the older fact describes a *different point in time*. A state change is not a contradiction.
 - Never silently pick one value and drop the other. Surface both with source and date when the discrepancy is material to the answer.
 - Never present a graph or memory snapshot as more current than a live connector's answer to the same question.
@@ -29,6 +29,6 @@ Exception: the user asked for "some" or "recent."
 
 ## Freshness
 
-- Graph and memory results reflect the last ingestion cycle — typically hours to a day old. Never present them as real-time.
-- For "today," "right now," or fast-decaying state such as live ticket and PR status, prefer a live connector. Or pair them: graph for context, connector for the current value.
+- Graph and memory results reflect the last ingestion cycle, usually 30 to 60 minutes behind the source. That is current enough for almost everything: answer from the graph and note the fact's date. Don't describe it as real-time, and don't re-check a live connector by default.
+- The exception is the last hour: "right now," "just changed," a meeting that ended minutes ago, a ticket someone says they just moved. For those, use the live connector, or pair them: graph for context, connector for the one current value.
 - A connector snapshot fact's timestamp is often the sync date, not the event date. Look for an explicit event date in the record before ordering or filtering by when something actually happened.
