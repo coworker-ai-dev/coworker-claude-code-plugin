@@ -72,7 +72,7 @@ All paths use the same OAuth sign-in (Google) and only ever expose tools you hav
 ## How updates ship (thin-skill architecture)
 
 The zip is deliberately a **stable shell**: skill bodies point at canonical playbooks
-maintained server-side as `public."GlobalSkill"` rows (`mcp-company-data-cascade`,
+maintained server-side as named skills (`mcp-company-data-cascade`,
 `mcp-om2-usage`, and whatever `skill_search` turns up for anything else) that Claude
 fetches live via `skill_retrieve`. Guidance changes ship by editing those rows - every install
 channel (claude.ai zip uploads, hosted marketplace, connectors) picks them up
