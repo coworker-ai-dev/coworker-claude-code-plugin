@@ -5,9 +5,9 @@
 When a request depends on this company's data, follow a fixed order. OM2 is the connective tissue across sources — it surfaces context that no single connector sees — so it comes early, but it is rarely the whole answer.
 
 ## The cascade
-1. **`individual_context`** — once per conversation, to know who's asking and what they can access.
-2. **`om2_search` / `om2_entity_search`** — orient in the knowledge graph. (See the `mcp-om2-usage` skill for which OM2 tool when.)
-3. **The direct connector** — Jira, Google Drive, Gmail, Calendar, Hubspot, Salesforce, Slack, a data warehouse, etc. — for live, specific, or very recent detail.
+1. **The OM2 tool that matches the question's shape** — what do we know / what happened → `om2_search` with a time window for "recent", "yesterday", "this week"; a named account, deal, or contact → `om2_entity_brief`; a person, including "me" → `om2_search` with their name in the query plus a window, or `om2_identify_people` then `om2_user_activity`; all / every / list → `om2_enumerate`; what's new, no topic → `om2_recent_activity`. (The `mcp-om2-usage` skill has the full map.)
+2. **`individual_context`** — once, before the first connector call or when the question depends on the user's own role, team, or reachable sources. The first Coworker tool result of a session already carries the user's identity and connected sources, so a plain graph question does not need this first.
+3. **The direct connector** — whatever the company has connected (chat, tickets, code, CRM, docs, email, calendar, warehouses) — only for the last hour the graph has not indexed, a raw document the user asked to read, or an exact aggregate the source computes (JQL, SQL, a CRM report). Name the source when you use it.
 4. **Public / `internet_search`** — last, for genuinely external info.
 
 ## Self-check before any connector tool call
@@ -15,24 +15,30 @@ When a request depends on this company's data, follow a fixed order. OM2 is the 
 
 If the answer is no, do it first. "The connector covers everything" is **not** a reason to skip OM2 — the graph carries cross-source context the connector alone won't.
 
-## OM2 first, not OM2 only
-Lead with OM2 to discover entities, relationships, and *where* something lives — then chain to the domain tool for specifics and recency. The rule is OM2 *first*, not OM2 *only*.
+## OM2 first, and usually OM2 only
+The graph lags the connected systems by under an hour. For most questions its answer is current enough and it is one call instead of several, so answer from it. Chain to the domain tool only for the three cases above. Fewer connector calls per answer is the goal: they are slower, larger, and return one source at a time.
 
 ## Worked examples
 
 **"What's happening with the Acme deal?"**
-`memory_retrieval("Acme deal status")` → `om2_entity_brief` / `om2_search` for Acme (graph view of the account + deals + recent facts) → if you need live CRM fields, `hubspot`/`salesforce` for the current deal record. ✗ Don't jump straight to `enterprise_search` or the CRM and skip OM2.
+`om2_entity_brief("Acme")` — the account, its deals, contacts, and recent facts in one call. Answer from it. Go to the CRM tool only if the user asks for an exact current field they say just changed, or for a pipeline aggregate. ✗ Don't jump to the CRM first, and don't re-check it by default.
+
+**"What did I do yesterday?"** (first-person, time-scoped)
+`om2_search` with the user's NAME in the query and `time_start: "yesterday"` — never the literal "what did I do". For the exhaustive record, `om2_identify_people(currentUser: true)` → `om2_user_activity`. ✗ Don't use `om2_recent_activity`; it is network-wide.
 
 **"Find the onboarding runbook."** (a specific named document)
-`memory_retrieval` → `om2_entity_search("onboarding runbook")` (named entity → use entity_search, not broad search) → if OM2 is thin, `google_drive_search` (real Drive permissions; surfaces un-indexed docs) → `google_drive_file_view` for the body.
+`om2_entity_search("onboarding runbook")` (named entity → entity_search, not broad search) → if OM2 is thin, `google_drive_search` (real Drive permissions; surfaces un-indexed docs) → `google_drive_file_view` when the user wants the body. This is the raw-document case.
 
 **"What's the latest in #eng-incidents?"** (channel-specific, recency-sensitive)
-`memory_retrieval` → `om2_search("eng-incidents recent activity")` for cross-source context → then `slack_search_v2` for the channel's current messages. OM2 alone won't have the freshest messages — chain to the source.
+`om2_search("eng-incidents", time_start: "today")` for cross-source context. The graph has everything older than about an hour; use `slack_search_v2` only if the user means the last hour, and say so.
+
+**"How many open P1 tickets per assignee?"** (exact aggregate)
+`om2_search` for context on the P1s if useful, then the tracker's query tool (JQL) for the exact counts. The graph holds synced snapshots; the source computes the numbers.
 
 ## Picking om2_search vs om2_entity_search
-Named a specific entity (a person, a document title, an account)? → `om2_entity_search` (or `om2_entity_brief` for an account/deal/contact). Open-ended "what do we know about X"? → `om2_search`.
+Named a specific entity (a person, a document title, an account)? → `om2_entity_search` (or `om2_entity_brief` for an account/deal/contact). Open-ended "what do we know about X"? → `om2_search`, with a time window whenever the question implies one.
 
-## When to skip memory + OM2
+## When to skip OM2
 Only when: the request is purely external (e.g. "what's the weather"); it's a trivial reply or an edit of existing conversation content; or the data is already in this conversation. Nothing else justifies skipping.
 
 ## Citing
