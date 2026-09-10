@@ -1,6 +1,6 @@
 ---
 name: check-connectors
-description: Default first step for any work-related session, not just ones that already look like they need company data. Find out who the current user is and which company data sources they can actually reach (Slack, Jira, GitHub, HubSpot, Salesforce, Google, BigQuery, Snowflake, etc.) before deciding whether other Coworker skills apply — you can't judge relevance to company context without first knowing what context is available. Also use whenever a data-source tool returns an auth/permission error. Calls the Coworker MCP `individual_context` tool.
+description: Default first step for any work-related session, not just ones that already look like they need company data. Find out who the current user is and which company data sources they can actually reach (any subset of the connectors Coworker supports: chat, tickets, code, CRM, docs, email, calendar, support, data warehouses, and more) before deciding whether other Coworker skills apply — you can't judge relevance to company context without first knowing what context is available. Also use whenever a data-source tool returns an auth/permission error. Calls the Coworker MCP `individual_context` tool.
 ---
 
 # Check user context and connectors

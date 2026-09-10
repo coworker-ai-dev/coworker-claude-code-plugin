@@ -1,6 +1,6 @@
 # Coworker for Claude
 
-Connect Claude — claude.ai, the Cowork desktop app, and Claude Code — to your company's knowledge through the **Coworker MCP**: your connected tools (Slack, Jira, GitHub, HubSpot, Salesforce, Google, BigQuery, Snowflake), organizational memory, and the **OM2 knowledge graph** — so Claude answers company questions from your real data instead of guessing.
+Connect Claude — claude.ai, the Cowork desktop app, and Claude Code — to your company's knowledge through the **Coworker MCP**: whatever work tools your company has connected (any subset of 50+ connectors: chat, tickets, code, CRM, docs, email, calendar, support, data warehouses), organizational memory, and the **OM2 knowledge graph** — so Claude answers company questions from your real data instead of guessing.
 
 ## What you get
 
@@ -54,10 +54,11 @@ All paths use the same OAuth sign-in (Google) and only ever expose tools you hav
 - **Add Organization instructions** (Organization settings → Organization and access → Organization instructions, 3,000-char cap). On claude.ai chat the MCP server's instructions never reach the model, so this is a real delivery channel, not a backstop. Paste this:
 
   ```text
-  This workspace is connected to Coworker — the source of truth for our company's
-  knowledge (people, teams, decisions, policies, projects, customers) and connected
-  tools (Slack, Jira, GitHub, HubSpot, Salesforce, Google, BigQuery, Snowflake) plus
-  the OM2 knowledge graph.
+  We have Coworker MCP connected as an organization — the source of truth for our
+  company's knowledge (people, teams, decisions, policies, projects, customers) and every
+  work tool we have connected to it (chat, tickets, code, CRM, docs, email, calendar,
+  support, data warehouses, and more; individual_context tells you which) plus the OM2
+  knowledge graph.
 
   When a request depends on internal/company knowledge, use the Coworker tools instead
   of answering from general knowledge:
