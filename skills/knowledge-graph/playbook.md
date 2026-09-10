@@ -18,8 +18,9 @@ Call it "organizational memory" when speaking to the user. Never expose node ids
 | Facts about one concept or entity, without needing the exhaustive record | `om2_atomic_data` — takes a focused query |
 | Completeness — "find all / every / list every X mentioning Y" | `om2_enumerate` — merges content matches, entity mentions, and matching items into one deduplicated set |
 | Turn names or emails (or "me") into exact Person entities | `om2_identify_people` — deterministic roster match, not fuzzy or semantic |
+| What one or more named people, or the current user, have been doing over a date range | `om2_user_activity` — their facts newest first; pass `currentUser: true` for the speaker. This is the per-person tool |
 | Might not be indexed yet, or you need a specific source's live state | `om2_hybrid_search` — queries the graph and the live source in parallel, tagging each result `served_by` |
-| "What's new?" with no specific query | `om2_recent_activity` |
+| "What's new?" across the whole company, no topic and no person | `om2_recent_activity` — network-wide, not per user; keep `limit` small |
 
 **ID tools** — need an id from a prior result. Don't call these first.
 
@@ -32,6 +33,10 @@ Call it "organizational memory" when speaking to the user. Never expose node ids
 | Trace a fact back to its source report or doc, to cite or verify | `om2_source_trace` | `su_id` |
 | The full context of one report: every fact, mentioned entities, source documents | `om2_report_explore` | report id, from `om2_source_trace` or a fact's `source_report_id` |
 
+## Time windows and first-person questions
+
+"Yesterday", "this week", "since Monday", "recently": always pass `time_start`/`time_end` (date macros like `yesterday` and `last monday` work) to `om2_search`, or a date range to `om2_user_activity` / `om2_entity_timeline`. Unscoped search over-retrieves old material and misses the recent items you were asked about. "I", "me", "my": do not search the literal word. Put the user's name in the `om2_search` query (it is in the session context and in `individual_context`) with a time window, or resolve them with `om2_identify_people` and call `om2_user_activity`.
+
 **Power path** — when the above don't cover it:
 
 `om2_graph_schema` to see node labels and relationship types with counts, then `om2_cypher` for a read-only targeted query, automatically restricted to what the user can see. Cypher is for exploring *from known entry points*, not for finding them — use an entry tool first.
@@ -40,6 +45,8 @@ Call it "organizational memory" when speaking to the user. Never expose node ids
 
 - **`om2_entity_search` vs `om2_identify_people`** — entity_search matches names loosely across all entity types; identify_people is a deterministic roster lookup for people specifically. Use it when you need the *right* person, not a likely one. It resolves the current user too.
 - **`om2_node_details` vs `om2_entity_timeline`** — node_details is a rich snapshot; entity_timeline is the complete record and won't truncate. Reach for the timeline whenever the question implies "everything."
+- **`om2_user_activity` vs `om2_entity_timeline`** — user_activity takes names (or `currentUser`) and covers several people in one call; entity_timeline takes one node id and goes deeper. Start with user_activity for "what has X been doing"; use the timeline when you already hold the id and need every fact.
+- **`om2_user_activity` vs `om2_recent_activity`** — user_activity is about people; recent_activity is the whole graph's latest facts with no filter, and it is large. Never use recent_activity to answer a question about a person.
 - **`om2_atomic_data` vs `om2_entity_timeline`** — atomic_data answers a focused question about an entity; the timeline is for exhaustive coverage.
 - **`om2_source_trace` vs `om2_report_explore`** — source_trace finds *which* report backs a fact; report_explore reads that report in full.
 
@@ -60,4 +67,8 @@ There is no `pagination` field and no injected `resolved_entities` block.
 
 ## Anti-loop
 
-An identical repeat call is always wrong. Zero results means change approach — a different tool, a broader query, or `om2_hybrid_search` against the live source. Prefer `om2_entity_brief` over hand-assembling an account view from `om2_search` plus connector calls. Stop once you can answer the question.
+An identical repeat call is always wrong. Zero results means change approach — a different tool, a narrower or wider time window, or `om2_hybrid_search` against the live source. Prefer `om2_entity_brief` over hand-assembling an account view from `om2_search` plus connector calls. Stop once you can answer the question.
+
+## When to leave the graph
+
+The graph lags the connected systems by under an hour, so answer from it for almost everything. Use a direct connector tool only for something from the last hour it has not indexed yet, for a raw document the user asked to read, or for an exact aggregate the source computes (JQL, SQL, a CRM report). When you do, name the source in the answer.

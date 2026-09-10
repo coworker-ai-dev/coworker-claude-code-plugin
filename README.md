@@ -122,6 +122,28 @@ skills/
   - a broad query that returns `retrieval.has_more: true` causes Claude to narrow or page, not present the result as exhaustive
   - an id from one tool result (e.g. an `om2_search` hit) is passed into `om2_source_trace` or `om2_cypher` without ever being shown to the user
 
+## Bundled playbooks are generated. Do not hand-edit them.
+
+`skills/knowledge-graph/playbook.md`, `skills/company-data-first/playbook.md`, and
+`skills/company-data-first/data-quality.md` are copies of three server-side skills
+(`mcp-om2-usage`, `mcp-company-data-cascade`, `mcp-data-quality`). The server-side
+skill is the source of truth; the copies exist so the model gets the procedure without
+a separate `skill_retrieve` call. Each file starts with a comment saying so.
+
+Whenever one of those skills changes on the server, someone has to regenerate the copies
+here and ship a release. This is a manual step today:
+
+1. Export the three skills as JSON, an array of `{"name": ..., "content": ...}`. From
+   Claude Code with the Coworker connector, `skill_retrieve` by name returns the content;
+   the Coworker admin tooling can export the same.
+2. `scripts/sync-playbooks.py path/to/skills.json` (or `-` for stdin). It rewrites the
+   three files and prints what it wrote. It never edits the server.
+3. Bump `version` in `.claude-plugin/plugin.json`, commit, PR, then follow the release
+   steps below.
+
+Editing `playbook.md` directly gets overwritten on the next sync, and editing the server
+skill without syncing leaves the plugin stale. Do both, in that order.
+
 ## Releasing (hosted artifacts)
 
 The app serves this plugin as GitHub-free install artifacts — a zip + `marketplace.json`
@@ -130,7 +152,8 @@ page (admin zip upload, `extraKnownMarketplaces` archive install). After merging
 change here:
 
 1. Bump `version` in `.claude-plugin/plugin.json` (drives `/plugin update` detection)
-   as part of the change.
+   as part of the change. If a server-side skill changed, regenerate the bundled
+   playbooks first (section above).
 2. Merge to `main`. The [release-reminder](.github/workflows/release-reminder.yml)
    workflow opens a `release-needed` issue here whenever shell files change - it's
    reminder-only on purpose, so no cross-repo credentials live in this repo.
