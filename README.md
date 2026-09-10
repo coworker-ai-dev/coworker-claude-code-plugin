@@ -1,6 +1,6 @@
 # Coworker for Claude
 
-Connect Claude — claude.ai, the Cowork desktop app, and Claude Code — to your company's knowledge through the **Coworker MCP**: your connected tools (Slack, Jira, GitHub, HubSpot, Salesforce, Google, BigQuery, Snowflake), organizational memory, and the **OM2 knowledge graph** — so Claude answers company questions from your real data instead of guessing.
+Connect Claude — claude.ai, the Cowork desktop app, and Claude Code — to your company's knowledge through the **Coworker MCP**: whatever work tools your company has connected (any subset of 50+ connectors: chat, tickets, code, CRM, docs, email, calendar, support, data warehouses), organizational memory, and the **OM2 knowledge graph** — so Claude answers company questions from your real data instead of guessing.
 
 ## What you get
 
@@ -39,24 +39,26 @@ Coworker is one MCP server (`https://odin.coworker.ai/mcp`) reachable from every
 
 | Surface | Best path | What reaches the model |
 |---|---|---|
-| **Claude.ai** (web + desktop app) | Org admin uploads this plugin zip (Organization settings → Plugins), or each user adds a custom connector: Settings → Connectors → Add custom connector → the URL → sign in. | Plugin **skills** (mounted in every session once the org installs the plugin) + **tool descriptions** + the **session context** Coworker attaches to the first tool result. MCP server `Instructions` are **not** delivered on this surface, and hooks never run. |
-| **Claude Cowork** (desktop agent) | Install this plugin via Customize → Plugins, or add the connector by URL. | Skills + tool descriptions + first-tool-result session context + MCP `Instructions`. Hooks do not fire in Cowork. |
-| **Claude Code** (CLI/IDE) | Install this plugin (above), or `claude mcp add --transport=http coworker https://odin.coworker.ai/mcp`. | Everything: skills, tool descriptions, first-tool-result session context, MCP `Instructions`, and the `SessionStart` hook. |
+| **Claude.ai chat** (web + desktop app) | Org Owner uploads this plugin zip (Organization settings → Plugins → Add plugins → Upload a file). claude.ai then shows **Set up connectors for Coworker**: click **Add** (not Skip) and keep the detected defaults (Authentication "Always required"; OAuth client "No client ID, register one automatically"). Set the plugin to Required, set the connector's tools to Always allow (Customize → Connectors), paste Organization instructions. Members click Connect once. Individuals without an org: Customize → Connectors → Add custom connector. | **Tool descriptions**, loaded lazily via tool search, + the **session context** Coworker attaches to the first tool result + Organization instructions + the plugin's **skills** (descriptions always visible; bodies on invocation). MCP server `Instructions` are silently dropped on this surface (anthropics/claude-ai-mcp#93). Hooks and agents never run. **Skip on the connector prompt yields a plugin with no tools**; adding the connector by hand before uploading creates a duplicate. |
+| **Claude Cowork** (desktop agent) | Shares the account's claude.ai connectors. Install this plugin via Customize → Plugins (org-published, or add the public repo as a marketplace); Cowork prompts for the connector sign-in. Org admins also flip Organization settings → Cowork → Permissions → Allow "Always allow" for connector tools (off by default). | Skills, hooks, and the plugin's bundled connector; tool descriptions; first-tool-result session context. MCP `Instructions` delivery is not documented. Read-only-annotated tools skip per-call approval. |
+| **Claude Code** (CLI/IDE, cloud) | Install this plugin, or `claude mcp add --transport=http coworker https://odin.coworker.ai/mcp`, or org-wide via server-managed settings (`managedMcpServers` + `extraKnownMarketplaces`/`enabledPlugins`). A connector added in claude.ai also appears automatically as `mcp__claude_ai_*`. | Everything: skills, the `SessionStart` hook, MCP `Instructions` **truncated at 2 KB**, tool descriptions **truncated at 2 KB each and deferred behind tool search**, first-tool-result session context. |
 
 All paths use the same OAuth sign-in (Google) and only ever expose tools you have access to.
 
-**The step people miss on claude.ai:** installing the plugin mounts the skills, but the Coworker *connector* still needs each member to authorize it — Claude shows a connect/sign-in prompt on first use, and tools only appear after it's completed. If Claude says Coworker isn't reachable, check the chat's tools/connectors menu, enable Coworker, and finish the Google sign-in. The `company-data-first` skill walks users through exactly this instead of failing silently.
+**The step people miss on claude.ai:** the connector prompt during plugin upload. It has a Skip button, and Skip leaves the org with the skills mounted and no Coworker tools. Click Add and complete the dialog. If a member's chat shows no Coworker tools, they open the chat's tools/connectors menu, enable coworker, and finish the Google sign-in.
 
 ### Workspace admins (Team/Enterprise)
 
-- **Push it to everyone:** upload the zip under Organization settings → Plugins and set it to **Installed by default** (or Required). Then, in the plugin's settings, set the Coworker connector's tool permissions to **Always allow** so members don't get an approval prompt on every call. Members still complete a one-time Google sign-in when Claude first uses Coworker.
-- **Add steering at the workspace level** (recommended). On claude.ai web the MCP server's instructions never reach the model, so a workspace/Project system prompt is a real delivery channel there — not just a backstop. Paste this:
+- **Upload the plugin and add its connector when asked:** Organization settings → Plugins → Add plugins → Upload a file. On **Set up connectors for Coworker**, click **Add** (never Skip), Continue, and keep the detected defaults (Authentication Always required; OAuth client "No client ID, register one automatically" - Coworker does not support Anthropic's hosted client metadata yet; Managed authorization off; no headers). Set the plugin to **Required**. If a Coworker connector already exists in the org, remove it before uploading or you get a duplicate row.
+- **Allow the tools org-wide:** Customize → Connectors → coworker → Tool permissions → **Always allow**, so members don't get an approval prompt on every call. Cowork also needs Organization settings → Cowork → Permissions → Allow "Always allow" for connector tools. Members complete a one-time Google sign-in (Customize → Connectors → Connect).
+- **Add Organization instructions** (Organization settings → Organization and access → Organization instructions, 3,000-char cap). On claude.ai chat the MCP server's instructions never reach the model, so this is a real delivery channel, not a backstop. Paste this:
 
   ```text
-  This workspace is connected to Coworker — the source of truth for our company's
-  knowledge (people, teams, decisions, policies, projects, customers) and connected
-  tools (Slack, Jira, GitHub, HubSpot, Salesforce, Google, BigQuery, Snowflake) plus
-  the OM2 knowledge graph.
+  We have Coworker MCP connected as an organization — the source of truth for our
+  company's knowledge (people, teams, decisions, policies, projects, customers) and every
+  work tool we have connected to it (chat, tickets, code, CRM, docs, email, calendar,
+  support, data warehouses, and more; individual_context tells you which) plus the OM2
+  knowledge graph.
 
   When a request depends on internal/company knowledge, use the Coworker tools instead
   of answering from general knowledge:
@@ -70,7 +72,7 @@ All paths use the same OAuth sign-in (Google) and only ever expose tools you hav
 ## How updates ship (thin-skill architecture)
 
 The zip is deliberately a **stable shell**: skill bodies point at canonical playbooks
-maintained server-side as `public."GlobalSkill"` rows (`mcp-company-data-cascade`,
+maintained server-side as named skills (`mcp-company-data-cascade`,
 `mcp-om2-usage`, and whatever `skill_search` turns up for anything else) that Claude
 fetches live via `skill_retrieve`. Guidance changes ship by editing those rows - every install
 channel (claude.ai zip uploads, hosted marketplace, connectors) picks them up

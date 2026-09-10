@@ -12,7 +12,7 @@ Use the Coworker MCP `om2_identify_people` tool to map names/emails to real iden
 1. Call `om2_identify_people` with `names` and/or `emails` as JSON arrays (e.g. `{"names": ["Sarah", "Dan"]}`).
 2. Set `currentUser: true` to identify the person you're talking to.
 3. Use `om2_person_network` on a returned node_id for a person's CLOSE_TO collaborators.
-4. If the question is about what that person is *currently* doing (not just who they are), don't stop at identity resolution — follow up with a live connector or knowledge-graph query (see `ask-company` / `knowledge-graph`) scoped to their resolved identity. Answering "what is X working on" from a summary of a past chat, without this step, is treating stale conversation memory as if it were current company state — avoid that.
+4. If the question is about what that person is *currently* doing (not just who they are), don't stop at identity resolution — call `om2_user_activity` with their name (or `currentUser: true`) and a date range, then `om2_search` scoped by `time_start` for the surrounding context. Answering "what is X working on" from a summary of a past chat, without this step, is treating stale conversation memory as if it were current company state — avoid that.
 
 ## Notes
 
