@@ -31,15 +31,25 @@ skills (`mcp-om2-usage`, `mcp-company-data-cascade`, `mcp-data-quality`). Never
 edit them by hand. When a server-side skill changes, export the three skills as
 JSON and run `scripts/sync-playbooks.py <file>`; then bump the version and
 release. If you are changing the guidance itself, change the server-side skill
-first, then sync. Full recipe: "Bundled playbooks are generated" in the README.
+first, then sync. Full recipe: "Bundled playbooks are generated" in MAINTAINERS.md.
 
 ## Releasing
 
 Most skill guidance ships live via `skill_retrieve`; only the three bundled
 playbooks above need a sync. Shell changes (`hooks/`, the skill roster,
 `.mcp.json`, `.claude-plugin/`, the bundled playbooks) need a version bump and
-a rebuild in core. See "Releasing" in the README; the release-reminder workflow
+a rebuild in core. See "Releasing" in MAINTAINERS.md; the release-reminder workflow
 opens a `release-needed` issue when this applies.
+
+## The release zip
+
+`git archive` of this repo IS the customer download. Only runtime files ship:
+`.claude-plugin/plugin.json`, `.mcp.json`, `README.md`, `hooks/`, `skills/`.
+Anything else you add must go in `.gitattributes` as `export-ignore`, and
+`README.md` must stay customer-facing only (maintainer docs go in
+`MAINTAINERS.md`). claude.ai rejects the whole plugin if any `SKILL.md`
+`description` is over 1024 characters. The `archive-check` workflow and core's
+build script both enforce these.
 
 ## Workflow
 

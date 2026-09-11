@@ -1,0 +1,41 @@
+# Guards the release archive. `git archive` of this repo is the zip customers
+# upload to their Claude org, so it must contain only runtime plugin files, and
+# every SKILL.md must pass claude.ai's plugin validation.
+name: Archive check
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Archive contains only runtime files
+        run: |
+          git archive --format=tar HEAD | tar -t | grep -v '/$' | sort > /tmp/archive.txt
+          bad=$(grep -Ev '^(\.claude-plugin/plugin\.json|\.mcp\.json|README\.md|hooks/.+|skills/.+)$' /tmp/archive.txt || true)
+          if [ -n "$bad" ]; then
+            echo "::error::Files in the release archive that customers don't need (add them to .gitattributes export-ignore):"
+            echo "$bad"
+            exit 1
+          fi
+          echo "Archive contents:"; cat /tmp/archive.txt
+      - name: Skill descriptions fit claude.ai's 1024-char limit
+        run: |
+          fail=0
+          for f in skills/*/SKILL.md; do
+            n=$(python3 -c "
+import re,sys
+t=open('$f').read()
+m=re.search(r'^description:\s*(.*)$', t, re.M)
+print(len(m.group(1)) if m else 0)")
+            echo "$f: $n chars"
+            if [ "$n" -gt 1024 ]; then echo "::error file=$f::description is $n chars; claude.ai rejects the plugin above 1024"; fail=1; fi
+          done
+          exit $fail
