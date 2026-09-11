@@ -30,11 +30,7 @@ jobs:
         run: |
           fail=0
           for f in skills/*/SKILL.md; do
-            n=$(python3 -c "
-import re,sys
-t=open('$f').read()
-m=re.search(r'^description:\s*(.*)$', t, re.M)
-print(len(m.group(1)) if m else 0)")
+            n=$(python3 -c 'import re,sys; m=re.search(r"^description:\s*(.*)$", open(sys.argv[1]).read(), re.M); print(len(m.group(1)) if m else 0)' "$f")
             echo "$f: $n chars"
             if [ "$n" -gt 1024 ]; then echo "::error file=$f::description is $n chars; claude.ai rejects the plugin above 1024"; fail=1; fi
           done
