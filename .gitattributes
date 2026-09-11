@@ -1,6 +1,13 @@
-# Contributor-facing files, excluded from `git archive` (the release zip
-# customers download and upload to their Claude org).
-AGENTS.md       export-ignore
-CLAUDE.md       export-ignore
-.github/        export-ignore
-.gitattributes  export-ignore
+# Contributor-only files, excluded from `git archive` — which is exactly what
+# customers download from app.coworker.ai and upload to their Claude org.
+# The release zip must contain ONLY what a plugin needs to run:
+#   .claude-plugin/plugin.json  .mcp.json  README.md  hooks/  skills/
+# Anything else added to this repo must be listed here. CI (archive-check)
+# and core's build script both fail the build if the archive drifts.
+AGENTS.md                      export-ignore
+CLAUDE.md                      export-ignore
+MAINTAINERS.md                 export-ignore
+.github/                       export-ignore
+.gitattributes                 export-ignore
+scripts/                       export-ignore
+.claude-plugin/marketplace.json export-ignore
